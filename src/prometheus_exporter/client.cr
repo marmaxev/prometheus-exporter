@@ -1,5 +1,4 @@
 require "./metric/remote_metric"
-require "halite"
 
 module PrometheusExporter
   class AlreadyRegisteredError < Exception; end
@@ -53,28 +52,23 @@ module PrometheusExporter
       metric.observe(value, keys)
     end
 
-    def send_json(obj) : Halite::Response | Nil
+    def send_json(obj) : HTTP::Client::Response | Nil
       return unless @enabled
 
       obj = obj.merge({ custom_labels: @custom_labels }) unless @custom_labels.empty?
 
-      send(obj)
+      send(obj.to_json)
     end
 
-    private def send(payload) : Halite::Response | Nil
-      conn.post("/send-metrics", json: payload)
+    private def send(payload) : HTTP::Client::Response | Nil
+      HTTP::Client.post(
+        "#{@host}:#{@port}/send-metrics",
+        body: payload
+      )
     rescue exception
       puts exception # TODO: replace by logger
 
       nil
-    end
-
-    private def conn
-      @conn ||= Halite::Client.new do
-        endpoint "#{@host}:#{@port}"
-        logging false
-        timeout 2.seconds
-      end
     end
   end
 end
