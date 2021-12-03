@@ -1,3 +1,5 @@
+require "http/server/handler"
+
 module PrometheusExporter
   module Middleware
     class LuckyHttpRequestCollector

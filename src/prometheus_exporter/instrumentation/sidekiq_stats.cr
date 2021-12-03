@@ -1,4 +1,4 @@
-require "sidekiq/sidekiq/api"
+require "sidekiq"
 
 module PrometheusExporter
   module Instrumentation
