@@ -44,10 +44,14 @@ module PrometheusExporter
       end
 
       private def match_path(method, path)
-        match = Lucky::Router.find_action(method, path)
-        return "" unless match
+        {% if @type.has_constant?("Lucky::Router") %}
+          match = Lucky::Router.find_action(method, path)
+          return "" unless match
 
-        Lucky::Router.routes.find { |route| route.action == match.payload }.try(&.path) || ""
+          Lucky::Router.routes.find { |route| route.action == match.payload }.try(&.path) || ""
+        {% else %}
+          ""
+        {% end %}
       end
 
       private def client

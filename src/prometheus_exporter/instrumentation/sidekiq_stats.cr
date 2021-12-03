@@ -1,5 +1,3 @@
-require "sidekiq"
-
 module PrometheusExporter
   module Instrumentation
     class SidekiqStats
@@ -30,18 +28,20 @@ module PrometheusExporter
       end
 
       private def collect_stats
-        stats = ::Sidekiq::Stats.new
+        {% if @type.has_constant?("Sidekiq::Stats") %}
+          stats = ::Sidekiq::Stats.new
 
-        {
-          processed: stats.processed,
-          failed: stats.failed,
-          enqueued: stats.enqueued,
-          scheduled_size: stats.scheduled_size,
-          retry_size: stats.retry_size,
-          dead_size: stats.dead_size,
-          processes_size: stats.processes_size,
-          workers_size: stats.workers_size,
-        }
+          {
+            processed: stats.processed,
+            failed: stats.failed,
+            enqueued: stats.enqueued,
+            scheduled_size: stats.scheduled_size,
+            retry_size: stats.retry_size,
+            dead_size: stats.dead_size,
+            processes_size: stats.processes_size,
+            workers_size: stats.workers_size,
+          }
+        {% end %}
       end
     end
   end
