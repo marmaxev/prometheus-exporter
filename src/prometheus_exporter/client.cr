@@ -1,4 +1,5 @@
 require "./metric/remote_metric"
+require "log"
 
 module PrometheusExporter
   class AlreadyRegisteredError < Exception; end
@@ -23,6 +24,13 @@ module PrometheusExporter
       @enabled : Bool = true
     )
       @metrics = {} of Symbol => PrometheusExporter::Metric::RemoteMetric
+
+      # env or error
+      HTTP::Client::Log.level = if ENV["LOG_LEVEL"]?
+        Log::Severity.new(ENV["LOG_LEVEL"].to_i)
+      else
+        Log::Severity.new(5)
+      end
     end
 
     def register(type : Symbol, name : Symbol, description : String = "") : PrometheusExporter::Metric::RemoteMetric
