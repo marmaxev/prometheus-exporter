@@ -61,6 +61,8 @@ module PrometheusExporter
     end
 
     private def send(payload) : HTTP::Client::Response | Nil
+      HTTP::Client::Log.level = :error
+
       HTTP::Client.post(
         "#{@host}:#{@port}/send-metrics",
         body: payload
