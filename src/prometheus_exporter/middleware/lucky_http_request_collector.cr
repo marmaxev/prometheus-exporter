@@ -2,7 +2,7 @@ module PrometheusExporter
   module Middleware
     class LuckyHttpRequestCollector
       include HTTP::Handler
-      
+
       getter durations : PrometheusExporter::Metric::RemoteMetric
       getter counters : PrometheusExporter::Metric::RemoteMetric
 
@@ -19,15 +19,11 @@ module PrometheusExporter
         )
       end
 
-      def client
-        @client ||= PrometheusExporter::Client.default
-      end
-
       def call(context)
         method = context.request.method
         path = context.request.try &.path
         path = path ? match_path(method, path) : ""
-    
+
         t0 = Time.utc
         begin
           call_next(context)
@@ -49,7 +45,11 @@ module PrometheusExporter
         match = Lucky::Router.find_action(method, path)
         return "" unless match
 
-        Lucky::Router.routes.find { |route| route.action == match.payload }.try &.path || ""
+        Lucky::Router.routes.find { |route| route.action == match.payload }.try(&.path) || ""
+      end
+
+      private def client
+        @client ||= PrometheusExporter::Client.default
       end
     end
   end

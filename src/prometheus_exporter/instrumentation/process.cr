@@ -11,9 +11,9 @@ module PrometheusExporter
       }
 
       def self.start(
-        client : PrometheusExporter::Client = PrometheusExporter::Client.default, 
-        type : String = "crystal", 
-        frequency : Int = 5, 
+        client : PrometheusExporter::Client = PrometheusExporter::Client.default,
+        type : String = "crystal",
+        frequency : Int = 5,
         labels = {} of Symbol => String
       )
         process_collector = new(
@@ -50,11 +50,11 @@ module PrometheusExporter
         end
       end
 
-      def collect_stats
+      private def collect_stats
         times = ::Process.times
         gc_stats = GC.stats
 
-        {        
+        {
           :gc_heap_bytes => gc_stats.heap_size.to_f,
           :gc_free_bytes => gc_stats.free_bytes.to_f,
           :gc_total_bytes => gc_stats.total_bytes.to_f,

@@ -12,7 +12,7 @@ module PrometheusExporter
         spawn do
           while true
             begin
-              client.send_json process_collector.collect
+              client.send_json(process_collector.collect)
             rescue exception
               puts exception
             ensure
@@ -29,7 +29,7 @@ module PrometheusExporter
         }
       end
 
-      def collect_stats
+      private def collect_stats
         stats = ::Sidekiq::Stats.new
 
         {

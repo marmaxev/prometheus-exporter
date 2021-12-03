@@ -14,7 +14,7 @@ module PrometheusExporter
         @client.send_json(metric_params(value, keys))
       end
 
-      def metric_params(value, keys)
+      private def metric_params(value : Float, keys = {} of Symbol => Symbol)
         {
           type: @type,
           help: @description,
