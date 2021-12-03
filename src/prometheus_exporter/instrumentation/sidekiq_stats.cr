@@ -32,14 +32,14 @@ module PrometheusExporter
           stats = ::Sidekiq::Stats.new
 
           {
-            processed: stats.processed,
-            failed: stats.failed,
-            enqueued: stats.enqueued,
-            scheduled_size: stats.scheduled_size,
-            retry_size: stats.retry_size,
-            dead_size: stats.dead_size,
-            processes_size: stats.processes_size,
-            workers_size: stats.workers_size,
+            processed: stats.processed.as_i,
+            failed: stats.failed.as_i,
+            enqueued: stats.enqueued.as_i,
+            scheduled_size: stats.scheduled_size.as_i,
+            retry_size: stats.retry_size.as_i,
+            dead_size: stats.dead_size.as_i,
+            processes_size: stats.processes_size.as_i,
+            workers_size: stats.workers_size.as_i
           }
         {% else %}
           NamedTuple.new
