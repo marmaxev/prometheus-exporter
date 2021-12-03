@@ -41,6 +41,8 @@ module PrometheusExporter
             processes_size: stats.processes_size,
             workers_size: stats.workers_size,
           }
+        {% else %}
+          NamedTuple.new
         {% end %}
       end
     end
