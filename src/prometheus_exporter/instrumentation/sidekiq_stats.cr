@@ -28,7 +28,7 @@ module PrometheusExporter
       end
 
       private def collect_stats
-        {% if @type.has_constant?("Sidekiq::Stats") %}
+        {% if @top_level.has_constant?("Sidekiq") %}
           stats = ::Sidekiq::Stats.new
 
           {

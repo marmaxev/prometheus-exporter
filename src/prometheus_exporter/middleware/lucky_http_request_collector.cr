@@ -44,7 +44,7 @@ module PrometheusExporter
       end
 
       private def match_path(method, path)
-        {% if @type.has_constant?("Lucky::Router") %}
+        {% if @top_level.has_constant?("LuckyRouter") %}
           match = Lucky::Router.find_action(method, path)
           return "" unless match
 
