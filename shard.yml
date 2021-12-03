@@ -3,7 +3,12 @@ version: 0.1.0
 
 authors:
   - marmaxev <marmax.dev@gmail.com>
+  - SShekotihin <sergeishekotihin@gmail.com>
 
 crystal: 1.1.0
 
 license: MIT
+
+dependencies:
+  halite:
+    github: icyleaf/halite

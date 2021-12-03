@@ -1,5 +1,3 @@
-require "sidekiq/sidekiq/api"
-
 module PrometheusExporter
   module Instrumentation
     class SidekiqStats
@@ -12,9 +10,9 @@ module PrometheusExporter
         spawn do
           while true
             begin
-              client.send_json process_collector.collect
+              client.send_json(process_collector.collect)
             rescue exception
-              puts exception
+              ::PrometheusExporter::Log.error(exception: exception) {}
             ensure
               sleep frequency
             end
@@ -29,19 +27,23 @@ module PrometheusExporter
         }
       end
 
-      def collect_stats
-        stats = ::Sidekiq::Stats.new
+      private def collect_stats
+        {% if @type.has_constant?("Sidekiq::Stats") %}
+          stats = ::Sidekiq::Stats.new
 
-        {
-          processed: stats.processed,
-          failed: stats.failed,
-          enqueued: stats.enqueued,
-          scheduled_size: stats.scheduled_size,
-          retry_size: stats.retry_size,
-          dead_size: stats.dead_size,
-          processes_size: stats.processes_size,
-          workers_size: stats.workers_size,
-        }
+          {
+            processed: stats.processed,
+            failed: stats.failed,
+            enqueued: stats.enqueued,
+            scheduled_size: stats.scheduled_size,
+            retry_size: stats.retry_size,
+            dead_size: stats.dead_size,
+            processes_size: stats.processes_size,
+            workers_size: stats.workers_size,
+          }
+        {% else %}
+          NamedTuple.new
+        {% end %}
       end
     end
   end
