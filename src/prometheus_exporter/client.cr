@@ -27,8 +27,8 @@ module PrometheusExporter
       @metrics = {} of Symbol => PrometheusExporter::Metric::RemoteMetric
 
       # env or error
-      HTTP::Client::Log.level = if ENV["LOG_LEVEL"]?
-        Log::Severity.new(ENV["LOG_LEVEL"].to_i)
+      HTTP::Client::Log.level = if ENV["PROMETHEUS_EXPORTER_LOG_LEVEL"]?
+        Log::Severity.new(ENV["PROMETHEUS_EXPORTER_LOG_LEVEL"].to_i)
       else
         Log::Severity.new(5)
       end
@@ -72,7 +72,7 @@ module PrometheusExporter
     private def send(payload) : Halite::Response | Nil
       conn.post("/send-metrics", json: payload)
     rescue exception
-      puts exception # TODO: replace by logger
+      ::PrometheusExporter::Log.error(exception: exception) {}
 
       nil
     end

@@ -26,7 +26,7 @@ module PrometheusExporter
             begin
               process_collector.collect
             rescue exception
-              puts exception
+              PrometheusExporter::Log.error(exception: exception) {}
             ensure
               sleep frequency
             end
