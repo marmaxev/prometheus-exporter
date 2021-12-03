@@ -12,7 +12,7 @@ module PrometheusExporter
             begin
               client.send_json(process_collector.collect)
             rescue exception
-              PrometheusExporter::Log.error(exception: exception) {}
+              ::PrometheusExporter::Log.error(exception: exception) {}
             ensure
               sleep frequency
             end

@@ -28,9 +28,9 @@ module PrometheusExporter
 
       # env or error
       HTTP::Client::Log.level = if ENV["PROMETHEUS_EXPORTER_LOG_LEVEL"]?
-        Log::Severity.new(ENV["PROMETHEUS_EXPORTER_LOG_LEVEL"].to_i)
+        ::Log::Severity.new(ENV["PROMETHEUS_EXPORTER_LOG_LEVEL"].to_i)
       else
-        Log::Severity.new(5)
+        ::Log::Severity.new(5)
       end
     end
 
