@@ -23,7 +23,7 @@ module PrometheusExporter
 
       def call(context)
         method = context.request.method
-        path = context.request.try &.path
+        path = context.request.try(&.path)
         path = path ? match_path(method, path) : ""
 
         t0 = Time.utc
@@ -34,11 +34,17 @@ module PrometheusExporter
           status = context.response.status_code.to_s
 
           if (durations = @durations)
-            durations.observe((t1 - t0).to_f, { :status => status, :method => method, :path => path })
+            durations.observe(
+              value: (t1 - t0).to_f,
+              keys: { :status => status, :method => method, :path => path }
+            )
           end
 
           if (counters = @counters)
-            counters.observe(value: 1.0, keys: { :status => status, :method => method, :path => path })
+            counters.observe(
+              value: 1.0,
+              keys: { :status => status, :method => method, :path => path }
+            )
           end
         end
       end
