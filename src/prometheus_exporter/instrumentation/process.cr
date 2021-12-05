@@ -7,7 +7,8 @@ module PrometheusExporter
         :gc_total_bytes => "GC total bytes",
         :gc_unmapped_bytes => "GC unmapped bytes",
         :bytes_since_gc => "Bytes since GC",
-        :cpu_seconds => "Total CPU seconds"
+        :cpu_seconds => "Total CPU seconds",
+        :rss_bytes => "RSS in bytes"
       }
 
       def self.start(
@@ -32,6 +33,10 @@ module PrometheusExporter
             end
           end
         end
+      end
+
+      def self.pid
+        ::Process.pid
       end
 
       def initialize(client, @metric_labels : Hash(Symbol, String))
@@ -61,11 +66,15 @@ module PrometheusExporter
           :gc_unmapped_bytes => gc_stats.unmapped_bytes.to_f,
           :bytes_since_gc => gc_stats.bytes_since_gc.to_f,
           :cpu_seconds => times.stime + times.utime,
+          :rss_bytes => rss
         }
       end
 
-      private def self.pid
-        ::Process.pid
+      # rss size in bytes
+      private def rss
+        row = `ps -o pid,rss`.split("\n").find { |process| process =~ /#{self.class.pid} / }
+
+        row ? row.split(' ').last.to_f * 1024 : 0.0
       end
     end
   end
