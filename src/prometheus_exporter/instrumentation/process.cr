@@ -72,9 +72,13 @@ module PrometheusExporter
 
       # rss size in bytes
       private def rss
-        row = `ps -o pid,rss`.split("\n").find { |process| process =~ /#{self.class.pid} / }
+        if File.exists?("/proc/#{pid}/statm")
+          File.read("/proc/#{pid}/statm").split(" ")[1].to_f * 1024.0
+        else
+          row = `ps -o pid,rss`.split("\n").find { |process| process =~ /#{self.class.pid} / }
 
-        row ? row.split(' ').last.to_f * 1024 : 0.0
+          row ? row.split(' ').last.to_f * 1024.0 : 0.0
+        end
       rescue exception
         ::PrometheusExporter::Log.error(exception: exception) {}
 
