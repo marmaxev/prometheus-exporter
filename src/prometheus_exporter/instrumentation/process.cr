@@ -75,6 +75,10 @@ module PrometheusExporter
         row = `ps -o pid,rss`.split("\n").find { |process| process =~ /#{self.class.pid} / }
 
         row ? row.split(' ').last.to_f * 1024 : 0.0
+      rescue exception
+        ::PrometheusExporter::Log.error(exception: exception) {}
+
+        0.0
       end
     end
   end
