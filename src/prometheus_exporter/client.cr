@@ -1,6 +1,5 @@
 require "./metric/remote_metric"
 require "log"
-require "halite"
 
 module PrometheusExporter
   class AlreadyRegisteredError < Exception; end
@@ -22,9 +21,11 @@ module PrometheusExporter
       @host : String = ENV["COLLECTOR_HOST"]? || "http://localhost",
       @port : String | Int32 = ENV["COLLECTOR_PORT"]? || "9394",
       @custom_labels = Hash(Symbol, String).new,
-      @enabled : Bool = true
+      @enabled : Bool = true,
+      @worker_sleep : Float32 = 0.5
     )
       @metrics = {} of Symbol => PrometheusExporter::Metric::RemoteMetric
+      @queue = [] of String
 
       # env or error
       HTTP::Client::Log.level = if ENV["PROMETHEUS_EXPORTER_LOG_LEVEL"]?
@@ -32,6 +33,8 @@ module PrometheusExporter
       else
         ::Log::Severity.new(5)
       end
+
+      worker_thread if @enabled
     end
 
     def register(type : Symbol, name : Symbol, description : String = "") : PrometheusExporter::Metric::RemoteMetric
@@ -61,7 +64,7 @@ module PrometheusExporter
       metric.observe(value, keys)
     end
 
-    def send_json(obj) : Halite::Response| Nil
+    def send_json(obj)
       return unless @enabled
 
       obj = obj.merge({ custom_labels: @custom_labels }) unless @custom_labels.empty?
@@ -69,19 +72,74 @@ module PrometheusExporter
       send(obj)
     end
 
-    private def send(payload) : Halite::Response | Nil
-      conn.post("/send-metrics", json: payload)
+    private def send(payload)
+      @queue.push(payload.to_json.to_s)
     rescue exception
       ::PrometheusExporter::Log.error(exception: exception) {}
+    end
+
+    private def socket : TCPSocket | Nil
+      if (socket = @socket).nil? || socket.closed?
+        @socket = TCPSocket.new(@host, @port.to_i)
+
+        if (socket = @socket)
+          socket << ("POST /send-metrics HTTP/1.1\r\n")
+          socket << ("Transfer-Encoding: chunked\r\n")
+          socket << ("Host: #{@host}\r\n")
+          socket << ("Connection: Close\r\n")
+          socket << ("Content-Type: application/octet-stream\r\n")
+          socket << ("\r\n")
+        end
+      end
+
+      @socket
+    rescue exception
+      ::PrometheusExporter::Log.error(exception: exception) {}
+      sleep(5)
 
       nil
     end
 
-    private def conn
-      Halite::Client.new do
-        endpoint "#{@host}:#{@port}"
-        timeout 2
-        logging false
+    private def worker_thread
+      spawn do
+        while true
+          begin
+            process_queue
+          rescue exception
+            ::PrometheusExporter::Log.error(exception: exception) {}
+          ensure
+            sleep @worker_sleep
+          end
+        end
+      end
+    end
+
+    private def process_queue
+      return unless conn = socket
+
+      if (message = @queue.pop?)
+        conn << (message.bytesize.to_s(16).upcase)
+        conn << ("\r\n")
+        conn << (message)
+        conn << ("\r\n")
+      else
+        sleep @worker_sleep
+      end
+    rescue exception
+      ::PrometheusExporter::Log.error(exception: exception) {} 
+
+      close_socket
+    end
+
+    private def close_socket
+      if (conn = socket) && !conn.closed?
+        begin
+          conn << "0\r\n"
+          conn << "\r\n"
+          conn.flush
+        ensure
+          conn.close
+        end
       end
     end
   end

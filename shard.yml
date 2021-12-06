@@ -9,6 +9,3 @@ crystal: 1.1.0
 
 license: MIT
 
-dependencies:
-  halite:
-    github: icyleaf/halite
