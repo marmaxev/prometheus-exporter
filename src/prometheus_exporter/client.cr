@@ -1,5 +1,6 @@
 require "./metric/remote_metric"
 require "log"
+require "json"
 
 module PrometheusExporter
   class AlreadyRegisteredError < Exception; end
