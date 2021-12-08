@@ -1,3 +1,5 @@
+[![Crystal CI](https://github.com/marmaxev/prometheus-exporter/actions/workflows/crystal.yml/badge.svg?branch=master)](https://github.com/marmaxev/prometheus-exporter/actions/workflows/crystal.yml)
+
 # prometheus-exporter
 
 TODO: Write a description here
