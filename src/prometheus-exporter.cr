@@ -3,6 +3,6 @@ require "./prometheus_exporter/instrumentation/*"
 require "./prometheus_exporter/metric/*"
 require "./prometheus_exporter/middleware/*"
 
-module Prometheus::Exporter
+module PrometheusExporter
   VERSION = "0.1.0"
 end
