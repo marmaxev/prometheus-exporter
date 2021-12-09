@@ -1,34 +1,38 @@
+{% if @top_level.has_constant?("Sidekiq") %}
+  require "sidekiq/sidekiq/api"
+{% end %}
+
 module PrometheusExporter
   module Instrumentation
-    class SidekiqStats
-      def self.start(
-        client : PrometheusExporter::Client = PrometheusExporter::Client.default,
-        frequency : Int = 5
-      )
-        process_collector = new
+    {% if @top_level.has_constant?("Sidekiq") %}
+      class SidekiqStats
+        def self.start(
+          client : PrometheusExporter::Client = PrometheusExporter::Client.default,
+          frequency : Int = 5
+        )
+          process_collector = new
 
-        spawn do
-          while true
-            begin
-              client.send_json(process_collector.collect)
-            rescue exception
-              ::PrometheusExporter::Log.error(exception: exception) {}
-            ensure
-              sleep frequency
+          spawn do
+            while true
+              begin
+                client.send_json(process_collector.collect)
+              rescue exception
+                ::PrometheusExporter::Log.error(exception: exception) {}
+              ensure
+                sleep frequency
+              end
             end
           end
         end
-      end
 
-      def collect
-        {
-          type: "sidekiq_stats",
-          stats: collect_stats
-        }
-      end
+        def collect
+          {
+            type: "sidekiq_stats",
+            stats: collect_stats
+          }
+        end
 
-      private def collect_stats
-        {% if @top_level.has_constant?("Sidekiq") %}
+        private def collect_stats
           stats = ::Sidekiq::Stats.new
 
           {
@@ -41,10 +45,14 @@ module PrometheusExporter
             processes_size: stats.processes_size.as_i,
             workers_size: stats.workers_size.as_i
           }
-        {% else %}
-          NamedTuple.new
-        {% end %}
+        end
       end
-    end
+    {% else %}
+      class SidekiqStats
+        def self.start(**args)
+          raise SidekiqModuleNotFound.new("Sidekiq module not found!")
+        end
+      end
+    {% end %}
   end
 end
