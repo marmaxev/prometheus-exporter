@@ -19,7 +19,7 @@ module PrometheusExporter
     getter host, port
 
     def initialize(
-      @host : String = ENV["COLLECTOR_HOST"]? || "http://localhost",
+      @host : String = ENV["COLLECTOR_HOST"]? || "localhost",
       @port : String | Int32 = ENV["COLLECTOR_PORT"]? || "9394",
       @custom_labels = Hash(Symbol, String).new,
       @enabled : Bool = true,
