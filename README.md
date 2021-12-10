@@ -114,6 +114,7 @@ end
 This handler will process incoming requests and save data about their number and duration.
 
 **PrometheusExporter::Middleware::LuckyHttpRequestCollector**
+
 All metrics have a `status`, `method` and `path` labels.
 | Type    | Name                            | Description                             |
 | ---     | ---                             | ---                                     |
@@ -136,6 +137,7 @@ add_handler KemalHttpRequestCollector.new
 This handler will process incoming requests and save data about their number and duration.
 
 **PrometheusExporter::Middleware::KemalHttpRequestCollector**
+
 All metrics have a `status`, `method` and `path` labels.
 | Type    | Name                            | Description                             |
 | ---     | ---                             | ---                                     |
