@@ -2,9 +2,14 @@
 
 # prometheus-exporter
 
-A client for collecting and sending Prometheus metrics to the server. Supports several sets of basic metrics (for [Lucky](https://github.com/luckyframework/lucky), [Kemal](https://github.com/kemalcr/kemal) and [Sidekiq](https://github.com/mperham/sidekiq.cr)) and custom metrics.
+#### Prometheus metrics for your applications.
 
-Designed for use with [this](https://github.com/discourse/prometheus_exporter) server.
+This is a client library based on [ruby prometheus exporter](https://github.com/discourse/prometheus_exporter), adapted for applications written in the [Crystal programming language](https://github.com/crystal-lang/crystal).
+
+Allows you to collect and send Prometheus metrics to the server for further use.
+Supports several sets of basic metrics for some popular Crystal shards ([Lucky](https://github.com/luckyframework/lucky), [Kemal](https://github.com/kemalcr/kemal) and [Sidekiq](https://github.com/mperham/sidekiq.cr)) and custom metrics.
+
+There is no server application in the project yet, so please use the server from the [original project](https://github.com/discourse/prometheus_exporter).
 
 * [Installation](#installation)
 * [Usage](#usage)
