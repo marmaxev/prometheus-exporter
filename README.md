@@ -169,7 +169,7 @@ When you configure your sidekiq server add `PrometheusExporter::Instrumentation:
 
 cli = Sidekiq::CLI.new
 server = cli.configure do |config|
-  onfig.server_middleware.add ::PrometheusExporter::Instrumentation::Sidekiq.new # add this
+  config.server_middleware.add ::PrometheusExporter::Instrumentation::Sidekiq.new # add this
 end
 
 PrometheusExporter::Instrumentation::SidekiqStats.start(frequency: 10) # and this
