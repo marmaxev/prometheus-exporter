@@ -11,11 +11,11 @@ license: MIT
 
 development_dependencies:
   sidekiq:
-    github: mperham/sidekiq.cr
+    github: sschekotikhin/sidekiq.cr
     branch: master
   lucky:
     github: luckyframework/lucky
     branch: main
   kemal:
     github: kemalcr/kemal
-    version: "~> 1.0.0"
+    branch: master
