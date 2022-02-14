@@ -54,7 +54,7 @@ module PrometheusExporter
           match = Lucky.router.find_action(method, path)
           return "" unless match
 
-          Lucky.router.routes.find { |route| route[2] == match.payload }.try(&.path) || ""
+          Lucky.router.routes.find { |route| route[2] == match.payload }.try { |route| route[1] } || ""
         {% else %}
           ""
         {% end %}
