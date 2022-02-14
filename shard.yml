@@ -9,3 +9,13 @@ crystal: 1.1.0
 
 license: MIT
 
+development_dependencies:
+  sidekiq:
+    github: mperham/sidekiq.cr
+    branch: master
+  lucky:
+    github: luckyframework/lucky
+    version: "<= 0.29.0"
+  kemal:
+    github: kemalcr/kemal
+    version: "~> 1.0.0"
